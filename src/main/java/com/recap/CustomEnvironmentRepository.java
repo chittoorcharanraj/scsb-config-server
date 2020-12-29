@@ -40,7 +40,7 @@ public class CustomEnvironmentRepository implements EnvironmentRepository, Order
 			String sql = "select prop.p_key, prop.p_value from scsb_properties_t prop where institution_code IS NULL and active='Y'";
 			configList = jdbdTemplate.queryForList(sql);
 			Map<String, String> configMap = getConfigMap(configList);
-			configMap.forEach((key, value) -> responseJson.put((String) key, value));
+			configMap.forEach((key, value) -> responseJson.put((String) key.trim(), value.trim()));
 			String institutionSql = "select distinct institution_code from scsb_properties_t where institution_code IS NOT NULL and active='Y'";
 			List<String> institutions = jdbdTemplate.queryForList(institutionSql, String.class);
 
@@ -117,7 +117,7 @@ public class CustomEnvironmentRepository implements EnvironmentRepository, Order
 		Map<String, String> result = new HashMap<>();
 		try {
 			result = configList.stream()
-					.collect(Collectors.toMap(s -> (String) s.get("p_key"), s -> (String) s.get("p_value")));
+					.collect(Collectors.toMap(s -> ((String)s.get("p_key")).trim(), s -> ((String) s.get("p_value")).trim()));
 		} catch (Exception e) {
 			logger.error("error--> {}",e);
 		}
