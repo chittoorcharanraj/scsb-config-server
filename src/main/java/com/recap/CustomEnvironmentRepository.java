@@ -43,7 +43,7 @@ public class CustomEnvironmentRepository implements EnvironmentRepository, Order
             configMap.forEach((key, value) -> responseJson.put((String) key.trim(), value.trim()));
             configMap.forEach((key, value) -> {
                 if(key.equals("spring.datasource.url")) {
-                    logger.info("key --> " + key + " | value --> " + value);
+                    logger.info("key --> " + key + " | value --> " + value + " | profile --> " + profile );
                 }
             });
             if (!profile.equalsIgnoreCase("default")) {
@@ -53,7 +53,7 @@ public class CustomEnvironmentRepository implements EnvironmentRepository, Order
                 configEnvMap.forEach((key, value) -> responseJson.put((String) key.trim(), value.trim()));
                 configEnvMap.forEach((key, value) -> {
                     if(key.equals("spring.datasource.url")) {
-                        logger.info("key --> " + key + " | value --> " + value);
+                        logger.info("key --> " + key + " | value --> " + value + " | profile --> " + profile );
                     }
                 });
             }
