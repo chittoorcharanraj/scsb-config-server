@@ -38,24 +38,15 @@ public class CustomEnvironmentRepository implements EnvironmentRepository, Order
         Map<String, Object> response = null;
         try {
             String sql = "select p_key, p_value from scsb_properties_t where institution_code IS NULL and active='Y' and profile IS NULL";
+            logger.info("Profile --> "+profile);
             configList = jdbdTemplate.queryForList(sql);
             Map<String, String> configMap = getConfigMap(configList);
             configMap.forEach((key, value) -> responseJson.put((String) key.trim(), value.trim()));
-            configMap.forEach((key, value) -> {
-                if(key.equals("spring.datasource.url")) {
-                    logger.info("key --> " + key + " | value --> " + value + " | profile --> " + profile );
-                }
-            });
             if (!profile.equalsIgnoreCase("default")) {
                 String sqlEnv = "select p_key, p_value from scsb_properties_t where institution_code IS NULL and active='Y' and profile='" + profile + "'";
                 configList = jdbdTemplate.queryForList(sqlEnv);
                 Map<String, String> configEnvMap = getConfigMap(configList);
                 configEnvMap.forEach((key, value) -> responseJson.put((String) key.trim(), value.trim()));
-                configEnvMap.forEach((key, value) -> {
-                    if(key.equals("spring.datasource.url")) {
-                        logger.info("key --> " + key + " | value --> " + value + " | profile --> " + profile );
-                    }
-                });
             }
             String institutionSql = "select distinct institution_code from scsb_properties_t where institution_code IS NOT NULL and active='Y'";
             List<String> institutions = jdbdTemplate.queryForList(institutionSql, String.class);
