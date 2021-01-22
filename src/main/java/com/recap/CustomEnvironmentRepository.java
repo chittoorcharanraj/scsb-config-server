@@ -41,18 +41,26 @@ public class CustomEnvironmentRepository implements EnvironmentRepository, Order
             configList = jdbdTemplate.queryForList(sql);
             Map<String, String> configMap = getConfigMap(configList);
             configMap.forEach((key, value) -> responseJson.put((String) key.trim(), value.trim()));
+            configMap.forEach((key, value) -> {
+                if(key.equals("spring.datasource.url")) {
+                    logger.info("key --> " + key + " | value --> " + value);
+                }
+            });
             if (!profile.equalsIgnoreCase("default")) {
                 String sqlEnv = "select p_key, p_value from scsb_properties_t where institution_code IS NULL and active='Y' and profile='" + profile + "'";
                 configList = jdbdTemplate.queryForList(sqlEnv);
                 Map<String, String> configEnvMap = getConfigMap(configList);
-                configEnvMap.forEach((key, value) -> responseJson.put((String) key.trim(), value.trim()));
+                configEnvMap.forEach((key, value) -> logger.info("key --> " + key+ "| value --> "+value));
+                configMap.forEach((key, value) -> {
+                    if(key.equals("spring.datasource.url")) {
+                        logger.info("key --> " + key + " | value --> " + value);
+                    }
+                });
             }
             String institutionSql = "select distinct institution_code from scsb_properties_t where institution_code IS NOT NULL and active='Y'";
             List<String> institutions = jdbdTemplate.queryForList(institutionSql, String.class);
             for (String institution : institutions) {
                 List<Map<String, Object>> institutionConfig = getInstitutionData(institution);
-                logger.info("Institution -> {} -> {} ", institution, institutionConfig);
-
                 Map<String, String> institutionConfigMap = getConfigMap(institutionConfig);
                 ji.put(institution, institutionConfigMap);
             }
@@ -62,13 +70,10 @@ public class CustomEnvironmentRepository implements EnvironmentRepository, Order
 
             for (String imsLocation : imsLocations) {
                 List<Map<String, Object>> imsLocationConfig = getImsLocationData(imsLocation);
-                logger.info("ImsLocation -> {} -> {} " + imsLocation + " -> " + imsLocationConfig);
-
                 Map<String, String> imsLocationConfigConfigMap = getConfigMap(imsLocationConfig);
                 jl.put(imsLocation, imsLocationConfigConfigMap);
             }
             responseJson.put("ims_location", jl.toString());
-            logger.info("Final Config Json", responseJson);
             response = responseJson.toMap();
 
             environment.add(new PropertySource("mapPropertySource", response));
