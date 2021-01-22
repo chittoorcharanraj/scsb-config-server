@@ -38,6 +38,7 @@ public class CustomEnvironmentRepository implements EnvironmentRepository, Order
         Map<String, Object> response = null;
         try {
             String sql = "select p_key, p_value from scsb_properties_t where institution_code IS NULL and active='Y' and profile IS NULL";
+            logger.info("Profile --> "+profile);
             configList = jdbdTemplate.queryForList(sql);
             Map<String, String> configMap = getConfigMap(configList);
             configMap.forEach((key, value) -> responseJson.put((String) key.trim(), value.trim()));
@@ -51,8 +52,6 @@ public class CustomEnvironmentRepository implements EnvironmentRepository, Order
             List<String> institutions = jdbdTemplate.queryForList(institutionSql, String.class);
             for (String institution : institutions) {
                 List<Map<String, Object>> institutionConfig = getInstitutionData(institution);
-                logger.info("Institution -> {} -> {} ", institution, institutionConfig);
-
                 Map<String, String> institutionConfigMap = getConfigMap(institutionConfig);
                 ji.put(institution, institutionConfigMap);
             }
@@ -62,13 +61,10 @@ public class CustomEnvironmentRepository implements EnvironmentRepository, Order
 
             for (String imsLocation : imsLocations) {
                 List<Map<String, Object>> imsLocationConfig = getImsLocationData(imsLocation);
-                logger.info("ImsLocation -> {} -> {} ", imsLocation, imsLocationConfig);
-
                 Map<String, String> imsLocationConfigConfigMap = getConfigMap(imsLocationConfig);
                 jl.put(imsLocation, imsLocationConfigConfigMap);
             }
             responseJson.put("ims_location", jl.toString());
-            logger.info("Final Config Json: {}", responseJson);
             response = responseJson.toMap();
 
             environment.add(new PropertySource("mapPropertySource", response));
