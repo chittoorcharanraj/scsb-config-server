@@ -50,8 +50,8 @@ public class CustomEnvironmentRepository implements EnvironmentRepository, Order
                 String sqlEnv = "select p_key, p_value from scsb_properties_t where institution_code IS NULL and active='Y' and profile='" + profile + "'";
                 configList = jdbdTemplate.queryForList(sqlEnv);
                 Map<String, String> configEnvMap = getConfigMap(configList);
-                configEnvMap.forEach((key, value) -> logger.info("key --> " + key+ "| value --> "+value));
-                configMap.forEach((key, value) -> {
+                configEnvMap.forEach((key, value) -> responseJson.put((String) key.trim(), value.trim()));
+                configEnvMap.forEach((key, value) -> {
                     if(key.equals("spring.datasource.url")) {
                         logger.info("key --> " + key + " | value --> " + value);
                     }
