@@ -62,13 +62,13 @@ public class CustomEnvironmentRepository implements EnvironmentRepository, Order
 
             for (String imsLocation : imsLocations) {
                 List<Map<String, Object>> imsLocationConfig = getImsLocationData(imsLocation);
-                logger.info("ImsLocation -> {} -> {} " + imsLocation + " -> " + imsLocationConfig);
+                logger.info("ImsLocation -> {} -> {} ", imsLocation, imsLocationConfig);
 
                 Map<String, String> imsLocationConfigConfigMap = getConfigMap(imsLocationConfig);
                 jl.put(imsLocation, imsLocationConfigConfigMap);
             }
             responseJson.put("ims_location", jl.toString());
-            logger.info("Final Config Json", responseJson);
+            logger.info("Final Config Json: {}", responseJson);
             response = responseJson.toMap();
 
             environment.add(new PropertySource("mapPropertySource", response));
