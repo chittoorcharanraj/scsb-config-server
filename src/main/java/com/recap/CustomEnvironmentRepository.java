@@ -1,5 +1,6 @@
 package com.recap;
 
+import com.recap.util.SecurityUtil;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,50 +29,73 @@ public class CustomEnvironmentRepository implements EnvironmentRepository, Order
     @Autowired
     JdbcTemplate jdbdTemplate;
 
+    @Autowired
+    SecurityUtil securityUtil;
+
     @Override
     public Environment findOne(String application, String profile, String label) {
         Environment environment = new Environment(application, profile);
-        List<Map<String, Object>> configList = null;
         JSONObject ji = new JSONObject();
         JSONObject jl = new JSONObject();
         JSONObject responseJson = new JSONObject();
-        Map<String, Object> response = null;
+        Map<String, Object> responseMap = null;
+        Map<String, Object> responseEncryptedEntriesMap = null;
+        Map<String, Object> finalResponseMap = null;
         try {
-            String sql = "select p_key, p_value from scsb_properties_t where institution_code IS NULL and active='Y' and profile IS NULL";
-            logger.info("Profile --> "+profile);
-            configList = jdbdTemplate.queryForList(sql);
-            Map<String, String> configMap = getConfigMap(configList);
-            configMap.forEach((key, value) -> responseJson.put((String) key.trim(), value.trim()));
-            if (!profile.equalsIgnoreCase("default")) {
-                String sqlEnv = "select p_key, p_value from scsb_properties_t where institution_code IS NULL and active='Y' and profile='" + profile + "'";
-                configList = jdbdTemplate.queryForList(sqlEnv);
-                Map<String, String> configEnvMap = getConfigMap(configList);
-                configEnvMap.forEach((key, value) -> responseJson.put((String) key.trim(), value.trim()));
-            }
-            String institutionSql = "select distinct institution_code from scsb_properties_t where institution_code IS NOT NULL and active='Y'";
-            List<String> institutions = jdbdTemplate.queryForList(institutionSql, String.class);
+            responseMap = getJsonObject(RecapConstants.SQL, RecapConstants.SQL_ENV, profile, false).toMap();
+            responseEncryptedEntriesMap = getJsonObject(RecapConstants.SQL_FOR_ENCRYPTED, RecapConstants.SQL_ENV_FOR_ENCRYPTED, profile, true).toMap();
+            //-------------------------------INSTITUTION SPECIFIC-------------------------------------------------
+            List<String> institutions = jdbdTemplate.queryForList(RecapConstants.SQL_INSTITUTION, String.class);
             for (String institution : institutions) {
                 List<Map<String, Object>> institutionConfig = getInstitutionData(institution);
                 Map<String, String> institutionConfigMap = getConfigMap(institutionConfig);
                 ji.put(institution, institutionConfigMap);
             }
             responseJson.put("institution", ji.toString());
-            String imsLocationSql = "select distinct ims_location_code from scsb_properties_t where ims_location_code IS NOT NULL and active='Y'";
-            List<String> imsLocations = jdbdTemplate.queryForList(imsLocationSql, String.class);
-
+            //-------------------------------IMS_LOCATION SPECIFIC-------------------------------------------------
+            List<String> imsLocations = jdbdTemplate.queryForList(RecapConstants.SQL_IMS_LOCATION, String.class);
             for (String imsLocation : imsLocations) {
                 List<Map<String, Object>> imsLocationConfig = getImsLocationData(imsLocation);
                 Map<String, String> imsLocationConfigConfigMap = getConfigMap(imsLocationConfig);
                 jl.put(imsLocation, imsLocationConfigConfigMap);
             }
             responseJson.put("ims_location", jl.toString());
-            response = responseJson.toMap();
-
-            environment.add(new PropertySource("mapPropertySource", response));
+            //Building the final ResponseJson as map response
+            finalResponseMap = responseJson.toMap();
+            finalResponseMap.putAll(responseMap);
+            finalResponseMap.putAll(responseEncryptedEntriesMap);
+            environment.add(new PropertySource("mapPropertySource", finalResponseMap));
         } catch (Exception e) {
             logger.error("error--> {}", e);
         }
         return environment;
+    }
+
+    public JSONObject getJsonObject(String sql, String sqlEnv, String profile, boolean isEncrypted) {
+        JSONObject responseJson = new JSONObject();
+        List<Map<String, Object>> configList = null;
+        try {
+            logger.info("Profile --> " + profile);
+            configList = jdbdTemplate.queryForList(sql);
+            Map<String, String> configMap = getConfigMap(configList);
+            if (isEncrypted) {
+                configMap.forEach((key, value) -> responseJson.put((String) key.trim(), securityUtil.getDecryptedValue(value)));
+            } else {
+                configMap.forEach((key, value) -> responseJson.put((String) key.trim(), value.trim()));
+            }
+            if (!profile.equalsIgnoreCase("default")) {
+                configList = jdbdTemplate.queryForList(sqlEnv, profile);
+                Map<String, String> configEnvMap = getConfigMap(configList);
+                if (isEncrypted) {
+                    configEnvMap.forEach((key, value) -> responseJson.put((String) key.trim(), securityUtil.getDecryptedValue(value)));
+                } else {
+                    configEnvMap.forEach((key, value) -> responseJson.put((String) key.trim(), value.trim()));
+                }
+            }
+        } catch (Exception e) {
+            logger.error("error--> {}", e);
+        }
+        return responseJson;
     }
 
     /**
@@ -81,10 +105,9 @@ public class CustomEnvironmentRepository implements EnvironmentRepository, Order
      * @return result
      */
     public List<Map<String, Object>> getImsLocationData(String imsLocation) {
-        String sql = "select p_key, p_value from scsb_properties_t where institution_code IS NULL AND ims_location_code=? and active='Y'";
         List<Map<String, Object>> result = null;
         try {
-            result = jdbdTemplate.queryForList(sql, imsLocation);
+            result = jdbdTemplate.queryForList(RecapConstants.SQL_IMS_LOCATION_RECORDS, imsLocation);
         } catch (Exception e) {
             logger.error("error--> {}", e);
         }
@@ -98,10 +121,9 @@ public class CustomEnvironmentRepository implements EnvironmentRepository, Order
      * @return result
      */
     public List<Map<String, Object>> getInstitutionData(String institution) {
-        String sql = "select p_key, p_value from scsb_properties_t where institution_code=? and active='Y'";
         List<Map<String, Object>> result = null;
         try {
-            result = jdbdTemplate.queryForList(sql, institution);
+            result = jdbdTemplate.queryForList(RecapConstants.SQL_INSTITUTION_RECORDS, institution);
         } catch (Exception e) {
             logger.error("error--> {}", e);
         }
