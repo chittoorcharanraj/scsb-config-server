@@ -39,10 +39,6 @@ public class CustomEnvironmentRepository implements EnvironmentRepository, Order
         JSONObject jl = new JSONObject();
         JSONObject responseJson = new JSONObject();
         Map<String, Object> responseMap = null;
-        Map<String, Object> responseInstutitutionMap = null;
-        Map<String, Object> responseInstutitutionEncryptedMap = null;
-        Map<String, Object> responseImsLocationMap = null;
-        Map<String, Object> responseImsLocationEncryptedMap = null;
         Map<String, Object> responseEncryptedEntriesMap = null;
         Map<String, Object> finalResponseMap = null;
         try {
@@ -110,7 +106,11 @@ public class CustomEnvironmentRepository implements EnvironmentRepository, Order
      */
     public List<Map<String, Object>> getImsLocationData(String imsLocation) {
         List<Map<String, Object>> result = null;
-        result = getResult(imsLocation, result, RecapConstants.SQL_IMS_LOCATION_RECORDS, RecapConstants.SQL_IMS_LOCATION_RECORDS_FOR_ENCRYPTED);
+        try {
+            result = jdbdTemplate.queryForList(RecapConstants.SQL_IMS_LOCATION_RECORDS, imsLocation);
+        } catch (Exception e) {
+            logger.error("error--> {}", e);
+        }
         return result;
     }
 
@@ -122,40 +122,13 @@ public class CustomEnvironmentRepository implements EnvironmentRepository, Order
      */
     public List<Map<String, Object>> getInstitutionData(String institution) {
         List<Map<String, Object>> result = null;
-        result = getResult(institution, result, RecapConstants.SQL_INSTITUTION_RECORDS, RecapConstants.SQL_INSTITUTION_RECORDS_FOR_ENCRYPTED);
-        return result;
-    }
-
-    private List<Map<String, Object>> getResult(String institutionOrlocation, List<Map<String, Object>> result, String sql, String sqlEncrypted) {
-        List<Map<String, Object>> resultDecryptList;
-        List<Map<String, Object>> resultDecryptListFinal;
         try {
-            result = jdbdTemplate.queryForList(sql, institutionOrlocation);
-            resultDecryptList = jdbdTemplate.queryForList(sqlEncrypted, institutionOrlocation);
-
-            if (resultDecryptList.size() > 0) {
-                resultDecryptListFinal = resultDecryptList.stream().map(m -> m.entrySet().stream()
-                        .collect(Collectors.toMap(p -> p.getKey(), p -> {
-                                    return getObject(p);
-                                }
-                        )))
-                        .collect(Collectors.toList());
-                result.addAll(resultDecryptListFinal);
-            }
+            result = jdbdTemplate.queryForList(RecapConstants.SQL_INSTITUTION_RECORDS, institution);
         } catch (Exception e) {
             logger.error("error--> {}", e);
         }
         return result;
     }
-
-    private Object getObject(Map.Entry<String, Object> p) {
-        if(p.getKey().equals("p_value")) {
-            Object decryptedValue = securityUtil.getDecryptedValue((String) p.getValue());
-            return decryptedValue;
-        }
-        return p.getValue();
-    }
-
 
     /**
      * This method converts the list of map to a single map
