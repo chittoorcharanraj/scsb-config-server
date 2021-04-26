@@ -37,6 +37,7 @@ public class CustomEnvironmentRepository implements EnvironmentRepository, Order
         Environment environment = new Environment(application, profile);
         JSONObject ji = new JSONObject();
         JSONObject jl = new JSONObject();
+        JSONObject jq = new JSONObject();
         JSONObject responseJson = new JSONObject();
         Map<String, Object> responseMap = null;
         Map<String, Object> responseEncryptedEntriesMap = null;
@@ -60,6 +61,20 @@ public class CustomEnvironmentRepository implements EnvironmentRepository, Order
                 jl.put(imsLocation, imsLocationConfigConfigMap);
             }
             responseJson.put("ims_location", jl.toString());
+
+            //-------------------------------INSTITUTION AND IMS_LOCATION SPECIFIC-------------------------------------------------
+            for (String institution : institutions) {
+                JSONObject jp = new JSONObject();
+                for (String imsLocation : imsLocations) {
+                    List<Map<String, Object>> institutionAndImsLocationConfig = getInstitutionAndImsLocationData(institution, imsLocation);
+                    Map<String, String> institutionAndImsLocationConfigConfigMap = getConfigMap(institutionAndImsLocationConfig);
+                    jp.put(imsLocation, institutionAndImsLocationConfigConfigMap);
+                }
+                jq.put(institution,jp);
+            }
+            System.out.println(jq);
+            responseJson.put("institution_and_ims_location_group", jq.toString());
+
             //Building the final ResponseJson as map response
             finalResponseMap = responseJson.toMap();
             finalResponseMap.putAll(responseMap);
@@ -99,6 +114,23 @@ public class CustomEnvironmentRepository implements EnvironmentRepository, Order
     }
 
     /**
+     * This method builds the institution and ims location config map.
+     *
+     * @param imsLocation the ims location
+     * @return result
+     */
+    public List<Map<String, Object>> getInstitutionAndImsLocationData(String institution, String imsLocation) {
+        List<Map<String, Object>> result = null;
+        String arr[] = {institution, imsLocation};
+        try {
+            result = getResult(imsLocation, result, RecapConstants.SQL_INSTITUTION_AND_IMS_LOCATION_RECORDS, RecapConstants.SQL_INSTITUTION_AND_IMS_LOCATION_RECORDS_FOR_ENCRYPTED, arr);
+        } catch (Exception e) {
+            logger.error("error--> {}", e);
+        }
+        return result;
+    }
+
+    /**
      * This method builds the ims location config map.
      *
      * @param imsLocation the ims location
@@ -107,7 +139,7 @@ public class CustomEnvironmentRepository implements EnvironmentRepository, Order
     public List<Map<String, Object>> getImsLocationData(String imsLocation) {
         List<Map<String, Object>> result = null;
         try {
-            result = getResult(imsLocation, result, RecapConstants.SQL_IMS_LOCATION_RECORDS, RecapConstants.SQL_IMS_LOCATION_RECORDS_FOR_ENCRYPTED);
+            result = getResult(imsLocation, result, RecapConstants.SQL_IMS_LOCATION_RECORDS, RecapConstants.SQL_IMS_LOCATION_RECORDS_FOR_ENCRYPTED, null);
         } catch (Exception e) {
             logger.error("error--> {}", e);
         }
@@ -123,28 +155,43 @@ public class CustomEnvironmentRepository implements EnvironmentRepository, Order
     public List<Map<String, Object>> getInstitutionData(String institution) {
         List<Map<String, Object>> result = null;
         try {
-            result = getResult(institution, result, RecapConstants.SQL_INSTITUTION_RECORDS, RecapConstants.SQL_INSTITUTION_RECORDS_FOR_ENCRYPTED);
+            result = getResult(institution, result, RecapConstants.SQL_INSTITUTION_RECORDS, RecapConstants.SQL_INSTITUTION_RECORDS_FOR_ENCRYPTED, null);
         } catch (Exception e) {
             logger.error("error--> {}", e);
         }
         return result;
     }
 
-    private List<Map<String, Object>> getResult(String institutionOrlocation, List<Map<String, Object>> result, String sql, String sqlEncrypted) {
+    private List<Map<String, Object>> getResult(String institutionOrlocation, List<Map<String, Object>> result, String sql, String sqlEncrypted, String arr[]) {
         List<Map<String, Object>> resultDecryptList;
         List<Map<String, Object>> resultDecryptListFinal;
         try {
-            result = jdbdTemplate.queryForList(sql, institutionOrlocation);
-            resultDecryptList = jdbdTemplate.queryForList(sqlEncrypted, institutionOrlocation);
+            if (arr != null) {
+                result = jdbdTemplate.queryForList(sql, arr[0], arr[1]);
+                resultDecryptList = jdbdTemplate.queryForList(sqlEncrypted, arr[0], arr[1]);
 
-            if (resultDecryptList.size() > 0) {
-                resultDecryptListFinal = resultDecryptList.stream().map(m -> m.entrySet().stream()
-                        .collect(Collectors.toMap(p -> p.getKey(), p -> {
-                                    return getObject(p);
-                                }
-                        )))
-                        .collect(Collectors.toList());
-                result.addAll(resultDecryptListFinal);
+                if (resultDecryptList.size() > 0) {
+                    resultDecryptListFinal = resultDecryptList.stream().map(m -> m.entrySet().stream()
+                            .collect(Collectors.toMap(p -> p.getKey(), p -> {
+                                        return getObject(p);
+                                    }
+                            )))
+                            .collect(Collectors.toList());
+                    result.addAll(resultDecryptListFinal);
+                }
+            } else {
+                result = jdbdTemplate.queryForList(sql, institutionOrlocation);
+                resultDecryptList = jdbdTemplate.queryForList(sqlEncrypted, institutionOrlocation);
+
+                if (resultDecryptList.size() > 0) {
+                    resultDecryptListFinal = resultDecryptList.stream().map(m -> m.entrySet().stream()
+                            .collect(Collectors.toMap(p -> p.getKey(), p -> {
+                                        return getObject(p);
+                                    }
+                            )))
+                            .collect(Collectors.toList());
+                    result.addAll(resultDecryptListFinal);
+                }
             }
         } catch (Exception e) {
             logger.error("error--> {}", e);
