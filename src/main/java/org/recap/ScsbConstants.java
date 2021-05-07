@@ -1,6 +1,6 @@
-package com.recap;
+package org.recap;
 
-public class RecapConstants {
+public class ScsbConstants {
 
     public static final String SQL = "select p_key, p_value from scsb_properties_t where institution_code IS NULL and ims_location_code is NULL and active='Y' and profile IS NULL and is_encrypted ='N'";
     public static final String SQL_ENV = "select p_key, p_value from scsb_properties_t where institution_code IS NULL and ims_location_code is NULL and active='Y' and profile= ? and is_encrypted ='N'";

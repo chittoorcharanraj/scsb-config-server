@@ -1,6 +1,6 @@
-package com.recap.config;
+package org.recap.config;
 
-import com.recap.util.SecurityUtil;
+import org.recap.util.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.DataSourceBuilder;
