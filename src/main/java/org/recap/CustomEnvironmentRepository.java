@@ -1,6 +1,6 @@
-package com.recap;
+package org.recap;
 
-import com.recap.util.SecurityUtil;
+import org.recap.util.SecurityUtil;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,10 +43,10 @@ public class CustomEnvironmentRepository implements EnvironmentRepository, Order
         Map<String, Object> responseEncryptedEntriesMap = null;
         Map<String, Object> finalResponseMap = null;
         try {
-            responseMap = getJsonObject(RecapConstants.SQL, RecapConstants.SQL_ENV, profile, false).toMap();
-            responseEncryptedEntriesMap = getJsonObject(RecapConstants.SQL_FOR_ENCRYPTED, RecapConstants.SQL_ENV_FOR_ENCRYPTED, profile, true).toMap();
+            responseMap = getJsonObject(ScsbConstants.SQL, ScsbConstants.SQL_ENV, profile, false).toMap();
+            responseEncryptedEntriesMap = getJsonObject(ScsbConstants.SQL_FOR_ENCRYPTED, ScsbConstants.SQL_ENV_FOR_ENCRYPTED, profile, true).toMap();
             //-------------------------------INSTITUTION SPECIFIC-------------------------------------------------
-            List<String> institutions = jdbdTemplate.queryForList(RecapConstants.SQL_INSTITUTION, String.class);
+            List<String> institutions = jdbdTemplate.queryForList(ScsbConstants.SQL_INSTITUTION, String.class);
             for (String institution : institutions) {
                 List<Map<String, Object>> institutionConfig = getInstitutionData(institution);
                 Map<String, String> institutionConfigMap = getConfigMap(institutionConfig);
@@ -54,7 +54,7 @@ public class CustomEnvironmentRepository implements EnvironmentRepository, Order
             }
             responseJson.put("institution", ji.toString());
             //-------------------------------IMS_LOCATION SPECIFIC-------------------------------------------------
-            List<String> imsLocations = jdbdTemplate.queryForList(RecapConstants.SQL_IMS_LOCATION, String.class);
+            List<String> imsLocations = jdbdTemplate.queryForList(ScsbConstants.SQL_IMS_LOCATION, String.class);
             for (String imsLocation : imsLocations) {
                 List<Map<String, Object>> imsLocationConfig = getImsLocationData(imsLocation);
                 Map<String, String> imsLocationConfigConfigMap = getConfigMap(imsLocationConfig);
@@ -123,7 +123,7 @@ public class CustomEnvironmentRepository implements EnvironmentRepository, Order
         List<Map<String, Object>> result = null;
         String arr[] = {institution, imsLocation};
         try {
-            result = getResult(imsLocation, result, RecapConstants.SQL_INSTITUTION_AND_IMS_LOCATION_RECORDS, RecapConstants.SQL_INSTITUTION_AND_IMS_LOCATION_RECORDS_FOR_ENCRYPTED, arr);
+            result = getResult(imsLocation, result, ScsbConstants.SQL_INSTITUTION_AND_IMS_LOCATION_RECORDS, ScsbConstants.SQL_INSTITUTION_AND_IMS_LOCATION_RECORDS_FOR_ENCRYPTED, arr);
         } catch (Exception e) {
             logger.error("error--> {}", e);
         }
@@ -139,7 +139,7 @@ public class CustomEnvironmentRepository implements EnvironmentRepository, Order
     public List<Map<String, Object>> getImsLocationData(String imsLocation) {
         List<Map<String, Object>> result = null;
         try {
-            result = getResult(imsLocation, result, RecapConstants.SQL_IMS_LOCATION_RECORDS, RecapConstants.SQL_IMS_LOCATION_RECORDS_FOR_ENCRYPTED, null);
+            result = getResult(imsLocation, result, ScsbConstants.SQL_IMS_LOCATION_RECORDS, ScsbConstants.SQL_IMS_LOCATION_RECORDS_FOR_ENCRYPTED, null);
         } catch (Exception e) {
             logger.error("error--> {}", e);
         }
@@ -155,7 +155,7 @@ public class CustomEnvironmentRepository implements EnvironmentRepository, Order
     public List<Map<String, Object>> getInstitutionData(String institution) {
         List<Map<String, Object>> result = null;
         try {
-            result = getResult(institution, result, RecapConstants.SQL_INSTITUTION_RECORDS, RecapConstants.SQL_INSTITUTION_RECORDS_FOR_ENCRYPTED, null);
+            result = getResult(institution, result, ScsbConstants.SQL_INSTITUTION_RECORDS, ScsbConstants.SQL_INSTITUTION_RECORDS_FOR_ENCRYPTED, null);
         } catch (Exception e) {
             logger.error("error--> {}", e);
         }
