@@ -10,8 +10,7 @@
 1. external-application_config_server.properties
 
   **This file contins the Database connection property for Config Server and should be placed under /data/config **
-   
-#-- Database settings
+
 spring.datasource.url=XXXXXX
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 spring.datasource.username=XXXXXX (Encrypted Value)
@@ -27,11 +26,13 @@ scsb.encryption.secretkey=XXXXXX
 
 ### Build
    Download the Project , navigate inside project folder and  build the project using below command
-   **./gradlew clean build -x test **
+  
+     **./gradlew clean build -x test **
 
 ### Docker Image Creation
    Naviagte Inside project folder where Dockerfile is present and Execute the below command
-   **sudo docker build -t phase4-scsb-config-server  . **
+
+  **sudo docker build -t phase4-scsb-config-server  . **
 
 ### Docker Run
 
