@@ -32,7 +32,7 @@ scsb.encryption.secretkey=XXXXXX
 ### Docker Image Creation
    Naviagte Inside project folder where Dockerfile is present and Execute the below command
 
-  **sudo docker build -t phase4-scsb-config-server  . **
+ **sudo docker build -t phase4-scsb-config-server  .**
 
 ### Docker Run
 
