@@ -10,11 +10,16 @@
 1. external-application_config_server.properties
 
   **This file contins the Database connection property for Config Server and should be placed under /data/config**
-*spring.datasource.url=XXXXXX
-*spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
-*spring.datasource.username=XXXXXX (Encrypted Value)
-*spring.datasource.password=XXXXXX (Encrypted Value)
-*spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
+
+ spring.datasource.url=XXXXXX
+
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+spring.datasource.username=XXXXXX (Encrypted Value)
+
+spring.datasource.password=XXXXXX (Encrypted Value)
+
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
 
 2. config-server-key.properties
 
@@ -37,4 +42,4 @@ scsb.encryption.secretkey=XXXXXX
 
 User the below command to Run the Docker 
  
-**sudo docker run --name phase4-scsb-config-server -v /data:/recap-vol  -p 8888:8888  --label collect_logs_with_filebeat="true" --label decode_log_event_to_json_object="true" -e "ENV= -Dspring.config.location=/recap-vol/config/external-application_config_server.properties  -Dspring.config.additional-location=/recap-vol/keys/config-server-key.properties -Dserver.port=8888" --network=scsb   -d phase4-scsb-config-server**
+sudo docker run --name phase4-scsb-config-server -v /data:/recap-vol  -p 8888:8888  --label collect_logs_with_filebeat="true" --label decode_log_event_to_json_object="true" -e "ENV= -Dspring.config.location=/recap-vol/config/external-application_config_server.properties  -Dspring.config.additional-location=/recap-vol/keys/config-server-key.properties -Dserver.port=8888" --network=scsb   -d phase4-scsb-config-server
