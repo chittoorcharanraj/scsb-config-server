@@ -10,7 +10,7 @@
 1. external-application_config_server.properties
 
   **This file contins the Database connection property for Config Server and should be placed under /data/config **
- 
+   
 #-- Database settings
 spring.datasource.url=XXXXXX
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
@@ -21,6 +21,7 @@ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
 2. config-server-key.properties
 
 **This file contins Secret key used for Encryption logic and should be placed under /data/keys**
+
 scsb.encryption.secretkey=XXXXXX
 
 
