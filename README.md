@@ -4,4 +4,10 @@
 ### Prerequisite
 
           - Java 11
-          - Docker 19.03.13
+          - Docker 19.03.13      
+          
+### Build
+   Download the Project and build the project using below command
+
+   ./gradlew clean build -x test 
+
