@@ -43,3 +43,17 @@ scsb.encryption.secretkey=XXXXXX
 User the below command to Run the Docker 
  
 sudo docker run --name phase4-scsb-config-server -v /data:/recap-vol  -p 8888:8888  --label collect_logs_with_filebeat="true" --label decode_log_event_to_json_object="true" -e "ENV= -Dspring.config.location=/recap-vol/config/external-application_config_server.properties  -Dspring.config.additional-location=/recap-vol/keys/config-server-key.properties -Dserver.port=8888" --network=scsb   -d phase4-scsb-config-server
+
+
+### Accessing Values from Config Server
+
+ With your config server running, you can make HTTP requests to the server to retrieve values from the  backend.Use the below URL to get the values.
+ 
+ http://localhost:8888/application/default
+ 
+ To Get the Profile Specific Values use the below URL.
+ 
+ Replace <PROFILENAME> -- with Actual Profile name i.e. DEV,QA,UAT,PROD
+   
+  http://localhost:8888/application/<PROFILENAME>
+ 
