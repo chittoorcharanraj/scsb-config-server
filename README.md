@@ -53,7 +53,7 @@ sudo docker run --name phase4-scsb-config-server -v /data:/recap-vol  -p 8888:88
  
  To Get the Profile Specific Values use the below URL.
  
- Replace <PROFILENAME> -- with Actual Profile name i.e. DEV,QA,UAT,PROD
+ Replace PROFILENAME -- with Actual Profile name i.e. DEV,QA,UAT,PROD
    
-  http://localhost:8888/application/<PROFILENAME>
+  http://localhost:8888/application/*PROFILENAME*
  
