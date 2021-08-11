@@ -82,6 +82,8 @@ public class CustomEnvironmentRepository implements EnvironmentRepository, Order
             environment.add(new PropertySource("mapPropertySource", finalResponseMap));
         } catch (Exception e) {
             logger.error("error--> {}", e);
+        } finally {
+        jdbcTemplate.getDataSource().getConnection().close();
         }
         return environment;
     }
@@ -109,6 +111,9 @@ public class CustomEnvironmentRepository implements EnvironmentRepository, Order
             }
         } catch (Exception e) {
             logger.error("error--> {}", e);
+        }
+        finally {
+        jdbcTemplate.getDataSource().getConnection().close();
         }
         return responseJson;
     }
@@ -195,6 +200,9 @@ public class CustomEnvironmentRepository implements EnvironmentRepository, Order
             }
         } catch (Exception e) {
             logger.error("error--> {}", e);
+        }
+        finally {
+        jdbcTemplate.getDataSource().getConnection().close();
         }
         return result;
     }
