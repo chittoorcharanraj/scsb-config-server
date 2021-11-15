@@ -9,7 +9,7 @@
 ### Prerequisite
 1. external-application_config_server.properties
 
-  **This file contins the Database connection property for Config Server and should be placed under **
+  **This file contins the Database connection property for Config Server and should be placed under <config folder>**
 
  spring.datasource.url=XXXXXX
 
@@ -23,7 +23,7 @@ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
 
 2. config-server-key.properties
 
-**This file contins Secret key used for Encryption logic and should be placed under **
+**This file contins Secret key used for Encryption logic and should be placed under <config folder>**
 
 scsb.encryption.secretkey=XXXXXX
 
