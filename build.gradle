@@ -1,5 +1,5 @@
 plugins {
-	id 'org.springframework.boot' version '2.6.2'
+	id 'org.springframework.boot' version '2.5.8'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
 }
@@ -13,13 +13,13 @@ repositories {
 }
 
 ext {
-	set('springCloudVersion', "2021.0.0")
+	set('springCloudVersion', "2020.0.5")
 }
 
 dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-config-server'
-	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: '2.6.2'
-	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.6.2'
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: '2.5.8'
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.5.8'
 	implementation 'mysql:mysql-connector-java:8.0.26'
 	implementation group: 'org.json', name: 'json', version: '20211205'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
