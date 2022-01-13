@@ -1,9 +1,8 @@
 package org.recap;
 
+import lombok.extern.slf4j.Slf4j;
 import org.recap.util.SecurityUtil;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.config.environment.Environment;
 import org.springframework.cloud.config.environment.PropertySource;
@@ -22,9 +21,10 @@ import java.util.stream.Collectors;
  * This class is a Custom Environment Repository used to build custom config map from the database
  * will be sent to all the SCSB clients.
  */
+@Slf4j
 public class CustomEnvironmentRepository implements EnvironmentRepository, Ordered {
 
-    private static final Logger logger = LoggerFactory.getLogger(CustomEnvironmentRepository.class);
+
 
     @Autowired
     JdbcTemplate jdbdTemplate;
@@ -81,7 +81,7 @@ public class CustomEnvironmentRepository implements EnvironmentRepository, Order
             finalResponseMap.putAll(responseEncryptedEntriesMap);
             environment.add(new PropertySource("mapPropertySource", finalResponseMap));
         } catch (Exception e) {
-            logger.error("error--> {}", e);
+            log.error("error--> {}", e);
         } 
         return environment;
     }
@@ -90,7 +90,7 @@ public class CustomEnvironmentRepository implements EnvironmentRepository, Order
         JSONObject responseJson = new JSONObject();
         List<Map<String, Object>> configList = null;
         try {
-            logger.info("Profile --> " + profile);
+            log.info("Profile --> " + profile);
             configList = jdbdTemplate.queryForList(sql);
             Map<String, String> configMap = getConfigMap(configList);
             if (isEncrypted) {
@@ -108,7 +108,7 @@ public class CustomEnvironmentRepository implements EnvironmentRepository, Order
                 }
             }
         } catch (Exception e) {
-            logger.error("error--> {}", e);
+            log.error("error--> {}", e);
         }
         return responseJson;
     }
@@ -125,7 +125,7 @@ public class CustomEnvironmentRepository implements EnvironmentRepository, Order
         try {
             result = getResult(imsLocation, result, ScsbConstants.SQL_INSTITUTION_AND_IMS_LOCATION_RECORDS, ScsbConstants.SQL_INSTITUTION_AND_IMS_LOCATION_RECORDS_FOR_ENCRYPTED, arr);
         } catch (Exception e) {
-            logger.error("error--> {}", e);
+            log.error("error--> {}", e);
         }
         return result;
     }
@@ -141,7 +141,7 @@ public class CustomEnvironmentRepository implements EnvironmentRepository, Order
         try {
             result = getResult(imsLocation, result, ScsbConstants.SQL_IMS_LOCATION_RECORDS, ScsbConstants.SQL_IMS_LOCATION_RECORDS_FOR_ENCRYPTED, null);
         } catch (Exception e) {
-            logger.error("error--> {}", e);
+            log.error("error--> {}", e);
         }
         return result;
     }
@@ -157,7 +157,7 @@ public class CustomEnvironmentRepository implements EnvironmentRepository, Order
         try {
             result = getResult(institution, result, ScsbConstants.SQL_INSTITUTION_RECORDS, ScsbConstants.SQL_INSTITUTION_RECORDS_FOR_ENCRYPTED, null);
         } catch (Exception e) {
-            logger.error("error--> {}", e);
+            log.error("error--> {}", e);
         }
         return result;
     }
@@ -194,7 +194,7 @@ public class CustomEnvironmentRepository implements EnvironmentRepository, Order
                 }
             }
         } catch (Exception e) {
-            logger.error("error--> {}", e);
+            log.error("error--> {}", e);
         }
         return result;
     }
@@ -219,7 +219,7 @@ public class CustomEnvironmentRepository implements EnvironmentRepository, Order
             result = configList.stream()
                     .collect(Collectors.toMap(s -> ((String) s.get("p_key")).trim(), s -> ((String) s.get("p_value")).trim()));
         } catch (Exception e) {
-            logger.error("error--> {}", e);
+            log.error("error--> {}", e);
         }
         return result;
     }
