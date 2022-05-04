@@ -8,10 +8,10 @@ import org.springframework.context.annotation.Bean;
 
 @EnableConfigServer
 @SpringBootApplication
-public class Phase4ScsbConfigServerApplication {
+public class ScsbConfigServerApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(Phase4ScsbConfigServerApplication.class, args);
+		SpringApplication.run(ScsbConfigServerApplication.class, args);
 	}
 
        @Bean
