@@ -36,13 +36,13 @@ scsb.encryption.secretkey=XXXXXX
 ### Docker Image Creation
    Naviagte Inside project folder where Dockerfile is present and Execute the below command
 
- **sudo docker build -t phase4-scsb-config-server  .**
+ **sudo docker build -t scsb-config-server  .**
 
 ### Docker Run
 
 User the below command to Run the Docker 
  
-sudo docker run --name phase4-scsb-config-server -v <volume>  -p <port>:<port>  --label collect_logs_with_filebeat="true" --label decode_log_event_to_json_object="true" -e "ENV= -Dspring.config.location=/recap-vol/config/external-application_config_server.properties  -Dspring.config.additional-location=/recap-vol/keys/config-server-key.properties -Dserver.port=<port>" --network=scsb   -d phase4-scsb-config-server
+sudo docker run --name scsb-config-server -v <volume>  -p <port>:<port>  --label collect_logs_with_filebeat="true" --label decode_log_event_to_json_object="true" -e "ENV= -Dspring.config.location=/recap-vol/config/external-application_config_server.properties  -Dspring.config.additional-location=/recap-vol/keys/config-server-key.properties -Dserver.port=<port>" --network=scsb   -d scsb-config-server
 
 
 ### Accessing Values from Config Server
