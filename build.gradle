@@ -34,7 +34,7 @@ dependencies {
 configurations.all {
 	resolutionStrategy.eachDependency { DependencyResolveDetails details ->
 		if (details.requested.group == 'org.apache.logging.log4j') {
-			details.useVersion '2.20.0'
+			details.useVersion '3.0.0-alpha1'
 		}
 	}
 }
