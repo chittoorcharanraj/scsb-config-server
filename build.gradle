@@ -1,5 +1,5 @@
 plugins {
-	id 'org.springframework.boot' version '3.1.7'
+	id 'org.springframework.boot' version '3.2.1'
 	id 'io.spring.dependency-management' version '1.1.4'
 	id 'java'
 }
@@ -18,8 +18,8 @@ ext {
 
 dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-config-server'
-	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: '3.1.7'
-	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '3.1.7'
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: '3.2.1'
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '3.2.1'
 	implementation 'org.projectlombok:lombok:1.18.30'
 	annotationProcessor 'org.projectlombok:lombok:1.18.30'
 	testImplementation 'org.projectlombok:lombok:1.18.30'
